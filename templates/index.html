@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>WeatherHub – Explore Weather Worldwide</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="logo">⛅</span>
+      <div>
+        <h1>Weather<b>Hub</b></h1>
+        <small>Explore Weather Worldwide</small>
+      </div>
+    </div>
+
+    <nav class="nav flex-column">
+      <a class="nav-link active" href="#home">
+        <i class="bi bi-house-door-fill"></i> Home
+      </a>
+      <a class="nav-link" href="#current">
+        <i class="bi bi-cloud-fill"></i> Current Weather
+      </a>
+      <a class="nav-link" href="#forecast">
+        <i class="bi bi-calendar-week"></i> 5-Day Forecast
+      </a>
+      <a class="nav-link" href="#favourites">
+        <i class="bi bi-heart-fill"></i> Favourite Cities
+      </a>
+      <a class="nav-link" href="#about">
+        <i class="bi bi-info-circle-fill"></i> About
+      </a>
+    </nav>
+
+    <div class="globe"></div>
+    <p class="quote">“ Better Weather<br>Better Days ”</p>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main" id="home">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+
+      <button
+        class="menu-btn d-xl-none"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mobileNav"
+        aria-label="Open menu">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <!-- City Search Form -->
+      <form id="searchForm" class="search">
+        <span class="pin">
+          <i class="bi bi-geo-alt-fill"></i>
+        </span>
+
+        <input
+          id="cityInput"
+          name="city"
+          class="form-control"
+          type="text"
+          value="Vijayawada"
+          placeholder="Search city"
+          aria-label="City"
+          required>
+
+        <select
+          id="countryInput"
+          name="country"
+          class="form-select"
+          aria-label="Country">
+          <option value="IN" selected>IN</option>
+          <option value="US">US</option>
+          <option value="GB">GB</option>
+          <option value="JP">JP</option>
+          <option value="AU">AU</option>
+          <option value="">All</option>
+        </select>
+
+        <button id="searchButton" type="submit" class="btn btn-primary">
+          <i class="bi bi-search"></i> Search
+        </button>
+      </form>
+
+      <!-- Loading Indicator -->
+      <div
+        id="weatherLoading"
+        class="weather-loading"
+        role="status"
+        aria-live="polite"
+        hidden>
+        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        Loading weather...
+      </div>
+
+      <!-- Error Message -->
+      <div
+        id="weatherError"
+        class="weather-error"
+        role="alert"
+        hidden>
+      </div>
+
+      <!-- Theme Buttons -->
+      <div class="theme">
+        <button id="lightBtn" aria-label="Light">
+          <i class="bi bi-brightness-high-fill"></i>
+        </button>
+        <button id="darkBtn" class="on" aria-label="Dark">
+          <i class="bi bi-moon-fill"></i>
+        </button>
+      </div>
+
+      <!-- Clock -->
+      <div class="clock">
+        <div id="clockDate"></div>
+        <div id="clockTime"></div>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="row g-3 content">
+
+      <!-- Left Column -->
+      <div class="col-xl-8">
+
+        <!-- Current Weather -->
+        <section id="current" class="hero">
+
+          <span class="live"><i></i> Live Weather</span>
+
+          <div class="moon"></div>
+
+          <h2 id="hCity">Vijayawada<small>, IN</small></h2>
+
+          <p class="loc">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="hRegion">Andhra Pradesh, India</span>
+          </p>
+
+          <p class="dt" id="hDate">—</p>
+
+          <div class="temp">
+            <span id="hTemp">--</span><sup>°C</sup>
+          </div>
+
+          <!-- Weather Icon and Description -->
+          <div class="desc">
+            <img
+              id="weatherIcon"
+              src=""
+              alt="Weather condition"
+              hidden>
+            <span id="hDesc">—</span>
+          </div>
+
+          <div class="feels">
+            <i class="bi bi-thermometer-half"></i>
+            Feels like <span id="hFeels">--</span>°C
+          </div>
+
+        </section>
+
+        <!-- Weather Metrics -->
+        <section
+          class="metrics row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3"
+          aria-label="Weather statistics">
+
+          <div class="col">
+            <div class="m m1">
+              <i class="bi bi-thermometer-half"></i>
+              <span>Feels Like</span>
+              <b id="mFeels">--</b>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="m m2">
+              <i class="bi bi-droplet"></i>
+              <span>Humidity</span>
+              <b id="mHum">--</b>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="m m3">
+              <i class="bi bi-wind"></i>
+              <span>Wind Speed</span>
+              <b id="mWind">--</b>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="m m4">
+              <i class="bi bi-speedometer2"></i>
+              <span>Pressure</span>
+              <b id="mPres">--</b>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="m m5">
+              <i class="bi bi-eye"></i>
+              <span>Visibility</span>
+              <b id="mVis">--</b>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Five-Day Forecast -->
+        <section id="forecast" class="panel">
+
+          <div class="ph">
+            <h3>
+              <i class="bi bi-calendar-week"></i>
+              5-Day Weather Forecast
+            </h3>
+
+            <a href="#" class="btn btn-sm btn-outline">
+              View Detailed Forecast
+              <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+
+          <div
+            id="forecastRow"
+            class="days row row-cols-2 row-cols-sm-3 row-cols-md-5 g-2">
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-xl-4">
+
+        <!-- Favourite Cities -->
+        <section id="favourites" class="panel">
+
+          <div class="ph">
+            <h3>
+              <i class="bi bi-heart-fill text-danger"></i>
+              Favourite Cities
+            </h3>
+
+            <button id="addCityBtn" class="btn btn-primary btn-sm" type="button">
+              <i class="bi bi-plus-lg"></i> Add City
+            </button>
+          </div>
+
+          <div id="favList"></div>
+
+          <a href="#" class="btn btn-outline w-100 mt-2">
+            View All Favourite Cities
+            <i class="bi bi-arrow-right"></i>
+          </a>
+
+        </section>
+
+        <!-- World Weather -->
+        <section class="panel mt-3">
+
+          <div class="ph">
+            <h3>
+              <i class="bi bi-globe2"></i>
+              Weather around the World
+            </h3>
+
+            <a href="#" class="btn btn-sm btn-outline">View on Map</a>
+          </div>
+
+          <div id="worldList"></div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="about" class="visually-hidden">
+      WeatherHub – data served by the Flask REST API.
+    </footer>
+
+  </main>
+</div>
+
+<!-- Mobile Navigation -->
+<div
+  class="offcanvas offcanvas-start mobile-nav"
+  tabindex="-1"
+  id="mobileNav"
+  aria-label="Menu">
+
+  <div class="offcanvas-header">
+    <div class="brand p-0">
+      <span class="logo">⛅</span>
+      <h1>Weather<b>Hub</b></h1>
+    </div>
+
+    <button
+      class="btn-close btn-close-white"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close">
+    </button>
+  </div>
+
+  <div class="offcanvas-body">
+    <nav class="nav flex-column">
+
+      <a data-bs-dismiss="offcanvas" class="nav-link active" href="#home">
+        <i class="bi bi-house-door-fill"></i> Home
+      </a>
+
+      <a data-bs-dismiss="offcanvas" class="nav-link" href="#current">
+        <i class="bi bi-cloud-fill"></i> Current Weather
+      </a>
+
+      <a data-bs-dismiss="offcanvas" class="nav-link" href="#forecast">
+        <i class="bi bi-calendar-week"></i> 5-Day Forecast
+      </a>
+
+      <a data-bs-dismiss="offcanvas" class="nav-link" href="#favourites">
+        <i class="bi bi-heart-fill"></i> Favourite Cities
+      </a>
+
+      <a data-bs-dismiss="offcanvas" class="nav-link" href="#about">
+        <i class="bi bi-info-circle-fill"></i> About
+      </a>
+
+    </nav>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast-msg"></div>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
